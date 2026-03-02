@@ -48,7 +48,7 @@ final class BLEManager: NSObject, @unchecked Sendable {
         discoveredDevices = []
         isScanning = true
         centralManager.scanForPeripherals(
-            withServices: nil,
+            withServices: [BLEConstants.alfieServiceUUID],
             options: [CBCentralManagerScanOptionAllowDuplicatesKey: false]
         )
         logger.info("Started scanning for Alfie devices")
@@ -124,8 +124,6 @@ extension BLEManager: CBCentralManagerDelegate {
         MainActor.assumeIsolated {
             let name = advertisementData[CBAdvertisementDataLocalNameKey] as? String ?? peripheral.name ?? "Unknown Device"
             let rssi = RSSI.intValue
-
-            guard name.localizedCaseInsensitiveContains("Alfie") else { return }
 
             if let idx = discoveredDevices.firstIndex(where: { $0.id == peripheral.identifier }) {
                 discoveredDevices[idx].rssi = rssi
